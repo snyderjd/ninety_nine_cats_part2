@@ -1,5 +1,6 @@
 class UsersController < ApplicationController
-
+    before_action :require_no_user!
+    
     def new
         @user = User.new
         render :new
@@ -9,9 +10,11 @@ class UsersController < ApplicationController
         @user = User.new(user_params)
 
         if @user.save
-            render json: @user
+            @user.reset_session_token!
+            session[:session_token] = @user.session_token
+            redirect_to cats_url
         else
-            render json: @user.errors.full_messages
+            render :new
         end
     end
 
