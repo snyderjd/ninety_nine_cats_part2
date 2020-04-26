@@ -13,4 +13,10 @@ class ApplicationController < ActionController::Base
         redirect_to cats_url if current_user
     end
 
+    def require_current_user
+        if current_user.nil?
+            redirect_to cats_url
+        end
+    end
+
 end

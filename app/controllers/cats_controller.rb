@@ -1,4 +1,6 @@
 class CatsController < ApplicationController
+  before_action :require_current_user, only: [:new, :create, :edit, :update]
+
   def index
     @cats = Cat.all
     render :index
@@ -27,12 +29,19 @@ class CatsController < ApplicationController
   end
 
   def edit
-    @cat = Cat.find(params[:id])
-    render :edit
+    # current_user must own the cat in order to edit
+    @cat = current_user.cats.find(params[:id])
+
+    if @cat.nil?
+      redirect_to cats_url
+    else
+      render :edit
+    end
   end
 
   def update
-    @cat = Cat.find(params[:id])
+    # current_user must own the cat in order to update
+    @cat = current_user.cats.find(params[:id])
     if @cat.update_attributes(cat_params)
       redirect_to cat_url(@cat)
     else
