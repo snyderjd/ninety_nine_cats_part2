@@ -12,6 +12,8 @@ class UsersController < ApplicationController
         if @user.save
             @user.reset_session_token!
             session[:session_token] = @user.session_token
+            email = UserMailer.welcome_email(@user)
+            email.deliver_now
             redirect_to cats_url
         else
             render :new
